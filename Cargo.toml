@@ -1,0 +1,12 @@
+[package]
+name = "visual_alarm"
+version = "0.1.0"
+edition = "2018"
+
+
+[dependencies]
+x11rb = { version = "0.9.0", features = ["shape", "xfixes"] }
+fork = "0.1.18"
+clap = { version = "3.0.0-beta.4", default-features = false, features = ["std"] }
+time = { version = "0.3.2", features = ["formatting", "local-offset"] }
+chrono = "0.4.19"
