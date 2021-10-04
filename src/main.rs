@@ -57,6 +57,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let nb_minutes_str = matches.value_of("NB_MINUTES").unwrap();
+    let nb_pulses_str = matches.value_of("nb_pulses").unwrap();
+    let nb_pulses = {
+        if let Ok(nb_pulses) = nb_pulses_str.parse::<u8>() {
+            nb_pulses
+        }
+        else {
+            eprintln!("Number of pulses is not an integer or has invalid range");
+            std::process::exit(1);
+        }
+    };
 
     let no_child = matches.is_present("no_child");
 
@@ -77,11 +87,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         //println!("written to file");
 
         if no_child {
-            set_remainder(nb_seconds)?;
+            set_remainder(nb_seconds, nb_pulses)?;
         }
         else {
             if let Ok(fork::Fork::Child) = fork::daemon(false, true) {
-                if let Err(e) = set_remainder(nb_seconds) {
+                if let Err(e) = set_remainder(nb_seconds, nb_pulses) {
                     println!("Error in child process!");
                     return Err(e);
                 }
