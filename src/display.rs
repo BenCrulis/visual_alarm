@@ -107,7 +107,7 @@ impl Display {
         for i in 0..total_ticks {
             //let pointer = self.conn.query_pointer(self.win_id).unwrap().reply().unwrap();
 
-            let draw_alpha = (((i as f64)*std::f64::consts::PI/TICKS_PER_PULSE as f64).sin().abs()*alpha*255.0) as u8;
+            let draw_alpha = (((i as f64)*std::f64::consts::PI/TICKS_PER_PULSE as f64).sin().abs()*alpha*255.0);
             //println!("draw alpha: {}", draw_alpha);
 
             /*
@@ -118,9 +118,9 @@ impl Display {
 
             let mut ch_gc = x11rb::protocol::xproto::ChangeGCAux::new();
 
-            let red = draw_alpha as u32;
-            let green = 0;
-            let blue = 0;
+            let red = (color.0 * draw_alpha) as u32;
+            let green = (color.1 * draw_alpha) as u32;
+            let blue = (color.2 * draw_alpha) as u32;
             let color: u32 = (blue << 0) | (green << 8) | (red << 16) | ((draw_alpha as u32) << 24);
 
             ch_gc.foreground = Some(color);
