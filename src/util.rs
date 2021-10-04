@@ -1,6 +1,9 @@
+use std::error::Error;
 use x11rb::protocol::xproto::{Depth, VisualClass, Visualtype};
 use std::os::raw::c_int;
+use crate::display;
 
+pub const TMP_FILE: &str = "/tmp/visual_alarm_description";
 
 pub fn find_visual_with_depth(visuals: &[Depth], depth: u8, visual_class: VisualClass) -> Option<Visualtype> {
     for depth_object in visuals {
@@ -22,4 +25,13 @@ pub fn slice_to_sequence_buffer(slice: &[u8]) -> [u8; 32] {
         buffer[i] = *v;
     }
     buffer
+}
+
+
+pub fn set_remainder(nb_seconds: u64) -> Result<(), Box<dyn Error>> {
+    std::thread::sleep(std::time::Duration::from_secs(nb_seconds));
+
+    let mut display_obj = display::Display::create_and_connect()?;
+    display_obj.default_screen_pulse_effect();
+    Ok(())
 }
