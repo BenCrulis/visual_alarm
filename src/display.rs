@@ -1,9 +1,8 @@
-use std::os::raw::c_int;
-
 use x11rb::connect;
 use x11rb::rust_connection::RustConnection;
 use x11rb::connection::{RequestConnection, Connection};
-use x11rb::protocol::xproto::{get_window_attributes, Screen, VisualClass, ColormapAlloc, create_colormap, CreateWindowAux, EventMask, WindowClass, ClipOrdering, CreateGCAux, create_gc, map_window, ConnectionExt, ImageFormat, Gcontext, ChangeGCAux, FillRule};
+use x11rb::protocol::xproto::{Screen, VisualClass, ColormapAlloc, create_colormap,
+                              CreateWindowAux, WindowClass, ClipOrdering, CreateGCAux, create_gc, map_window, ConnectionExt, Gcontext};
 use x11rb::protocol::xproto::create_window as  cw;
 use x11rb::protocol::shape::{SO, SK};
 use x11rb::protocol::shape::ConnectionExt as _;
@@ -37,7 +36,7 @@ impl Display {
         let width = screen.width_in_pixels;
         let height = screen.height_in_pixels;
 
-        let vinfo = get_window_attributes(&conn, root).unwrap().reply().unwrap();
+        //let vinfo = get_window_attributes(&conn, root).unwrap().reply().unwrap();
 
         let win_id = conn.generate_id().unwrap();
         let gc_id = conn.generate_id().unwrap();
@@ -57,9 +56,12 @@ impl Display {
         win_aux.colormap = Some(cm_id);
         //win_aux.background_pixmap = None;
 
+        /*
         let captured_events: u32 = (EventMask::POINTER_MOTION | EventMask::POINTER_MOTION_HINT | EventMask::BUTTON_PRESS
             | EventMask::KEY_PRESS
             | EventMask::KEY_RELEASE | EventMask::STRUCTURE_NOTIFY | EventMask::SUBSTRUCTURE_REDIRECT).into();
+
+         */
 
         //win_aux.event_mask = Some(captured_events); // attempt to let events pass through
 
@@ -72,7 +74,7 @@ impl Display {
         conn.shape_rectangles(SO::SET, SK::INPUT, ClipOrdering::UNSORTED,
                               win_id, 0, 0, &[]).unwrap().check().unwrap();
 
-        x11rb::protocol::xfixes::set_window_shape_region(&conn, win_id, SK::INPUT, 0, 0, region_id);
+        x11rb::protocol::xfixes::set_window_shape_region(&conn, win_id, SK::INPUT, 0, 0, region_id).unwrap();
 
         let mut gc_aux = CreateGCAux::new();
         //gc_aux.background = Some(0);
@@ -100,7 +102,7 @@ impl Display {
         const TICKS_PER_PULSE: u32 = 200;
         let total_ticks: u32 = TICKS_PER_PULSE*number_of_pulses as u32;
 
-        let loop_starting_time = std::time::Instant::now();
+        //let loop_starting_time = std::time::Instant::now();
 
         for i in 0..total_ticks {
             //let pointer = self.conn.query_pointer(self.win_id).unwrap().reply().unwrap();
@@ -133,7 +135,7 @@ impl Display {
                 y: 0,
                 width: self.width,
                 height: self.height
-            }]);
+            }]).unwrap();
 
             self.conn.flush().unwrap();
 

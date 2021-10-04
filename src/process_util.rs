@@ -36,12 +36,12 @@ pub fn list_alike(system: &mut impl sysinfo::SystemExt) {
             let link_name = link.to_str().unwrap();
             if link_name.starts_with(TMP_FILE) {
                 let path = entry.path();
-                let mut file = std::fs::OpenOptions::new().read(true).open(&path).unwrap();
+                let mut file = std::fs::OpenOptions::new().read(true).open(&path).expect(&format!("cannot open {}", fd));
                 //let link = std::fs::read_link(&path).unwrap();
                 //println!("link: {}", link.to_str().unwrap());
                 //std::fs::remove_file(filepath).unwrap();
                 let mut buffer = String::new();
-                file.read_to_string(&mut buffer);
+                file.read_to_string(&mut buffer).expect(&format!("cannot read from {}", fd));
                 //println!("content of file: {}", buffer);
                 println!("{}: {}", &pid, buffer);
                 break

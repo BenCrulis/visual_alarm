@@ -3,26 +3,21 @@ mod util;
 mod process_util;
 
 use std::error::Error;
-use std::time::Instant;
-
-use std::fs::File;
 
 use clap::{App, Arg};
-use time;
 use chrono;
 use fork;
 
-use sysinfo::{SystemExt, ProcessExt, Pid};
-use std::fmt::Debug;
-use std::io::{Write, Read};
+use sysinfo::{SystemExt, ProcessExt};
+use std::io::{Write};
 
 
-use crate::util::{TMP_FILE, find_visual_with_depth, set_remainder};
+use crate::util::{TMP_FILE, set_remainder};
 use crate::process_util::{get_reminder_processes, list_alike};
 
 
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let matches = App::new("Visual Alarm")
         .version("0.0.1")
         .author("Ben Crulis")
@@ -71,14 +66,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let nb_seconds = nb_minutes as u64 * 60;
 
-        let mut call_time = chrono::Local::now();
+        let call_time = chrono::Local::now();
 
-        let remind_time = (call_time + chrono::FixedOffset::east(nb_seconds as i32));
+        let remind_time = call_time + chrono::FixedOffset::east(nb_seconds as i32);
 
         println!("Reminder set for now+{} minutes: {}", nb_minutes, remind_time);
 
-        file.write_all(format!("set for {}", remind_time).as_bytes());
-        file.flush();
+        file.write_all(format!("set for {}", remind_time).as_bytes()).unwrap();
+        file.flush().unwrap();
         //println!("written to file");
 
         if no_child {

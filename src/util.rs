@@ -1,6 +1,5 @@
 use std::error::Error;
 use x11rb::protocol::xproto::{Depth, VisualClass, Visualtype};
-use std::os::raw::c_int;
 use crate::display;
 
 pub const TMP_FILE: &str = "/tmp/visual_alarm_description";
