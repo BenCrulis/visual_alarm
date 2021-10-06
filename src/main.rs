@@ -12,9 +12,8 @@ use sysinfo::{SystemExt, ProcessExt};
 use std::io::{Write};
 
 
-use crate::util::{TMP_FILE, set_remainder};
-use crate::process_util::{get_reminder_processes, list_alike};
-
+use crate::util::{TMP_FILE, fire_remainder};
+use crate::process_util::{get_reminder_processes, list_alike, run_function, try_notify_send};
 
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -86,20 +85,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         file.flush().unwrap();
         //println!("written to file");
 
-        if no_child {
-            set_remainder(nb_seconds, nb_pulses)?;
-        }
-        else {
-            if let Ok(fork::Fork::Child) = fork::daemon(false, true) {
-                if let Err(e) = set_remainder(nb_seconds, nb_pulses) {
-                    println!("Error in child process!");
-                    return Err(e);
-                }
+        return run_function(|| {
+            std::thread::sleep(std::time::Duration::from_secs(nb_seconds));
+            if let Err(err) = try_notify_send(format!("Reminder of {} minutes", nb_minutes)) {
+                eprintln!("Could not call notify-send: {}", err);
             }
-            else {
+            let res = fire_remainder(nb_pulses);
 
-            }
-        }
+            return res;
+        }, !no_child);
+
     }
     else {
         println!("incorrect number of minutes: \"{}\"\nexiting...", nb_minutes_str);

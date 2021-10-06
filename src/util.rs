@@ -1,6 +1,7 @@
 use std::error::Error;
 use x11rb::protocol::xproto::{Depth, VisualClass, Visualtype};
 use crate::display;
+use crate::process_util::try_notify_send;
 
 pub const TMP_FILE: &str = "/tmp/visual_alarm_description";
 
@@ -27,9 +28,7 @@ pub fn slice_to_sequence_buffer(slice: &[u8]) -> [u8; 32] {
 }
 
 
-pub fn set_remainder(nb_seconds: u64, nb_pulses: u8) -> Result<(), Box<dyn Error>> {
-    std::thread::sleep(std::time::Duration::from_secs(nb_seconds));
-
+pub fn fire_remainder(nb_pulses: u8) -> Result<(), Box<dyn Error>> {
     let mut display_obj = display::Display::create_and_connect()?;
     display_obj.screen_pulse_effect(nb_pulses, (1.0, 0.0, 0.0), 0.5);
     Ok(())

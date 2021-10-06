@@ -1,4 +1,6 @@
+use std::error::Error;
 use std::io::Read;
+use std::process::Output;
 use sysinfo::{Pid, ProcessExt};
 use crate::util::TMP_FILE;
 
@@ -47,5 +49,28 @@ pub fn list_alike(system: &mut impl sysinfo::SystemExt) {
                 break
             }
         }
+    }
+}
+
+
+pub fn try_notify_send(msg: String) -> std::io::Result<Output> {
+    std::process::Command::new("notify-send").arg(msg).output()
+}
+
+
+pub fn run_function(function: impl Fn() -> Result<(), Box<dyn Error>>, spawn_child: bool) -> Result<(), Box<dyn Error>> {
+
+    if spawn_child {
+        if let Ok(fork::Fork::Child) = fork::daemon(false, true) {
+            if let Err(e) = function() {
+                println!("Error in child process!");
+                return Err(e);
+            }
+            return Ok(())
+        }
+        return Ok(());
+    }
+    else {
+        return function();
     }
 }
