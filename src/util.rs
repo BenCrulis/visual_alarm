@@ -1,7 +1,6 @@
 use std::error::Error;
 use x11rb::protocol::xproto::{Depth, VisualClass, Visualtype};
 use crate::display;
-use crate::process_util::try_notify_send;
 
 pub const TMP_FILE: &str = "/tmp/visual_alarm_description";
 
@@ -16,15 +15,6 @@ pub fn find_visual_with_depth(visuals: &[Depth], depth: u8, visual_class: Visual
         }
     }
     None
-}
-
-
-pub fn slice_to_sequence_buffer(slice: &[u8]) -> [u8; 32] {
-    let mut buffer = [0; 32];
-    for (i, v) in slice.iter().enumerate() {
-        buffer[i] = *v;
-    }
-    buffer
 }
 
 

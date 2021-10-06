@@ -14,7 +14,6 @@ pub struct Display {
     win_id: u32,
     width: u16,
     height: u16,
-    depth: u8,
     gc_context: Gcontext
 }
 
@@ -92,7 +91,6 @@ impl Display {
             win_id,
             width,
             height,
-            depth: win_depth,
             gc_context: gc_id
         })
     }
@@ -107,7 +105,7 @@ impl Display {
         for i in 0..total_ticks {
             //let pointer = self.conn.query_pointer(self.win_id).unwrap().reply().unwrap();
 
-            let draw_alpha = (((i as f64)*std::f64::consts::PI/TICKS_PER_PULSE as f64).sin().abs()*alpha*255.0);
+            let draw_alpha = ((i as f64)*std::f64::consts::PI/TICKS_PER_PULSE as f64).sin().abs()*alpha*255.0;
             //println!("draw alpha: {}", draw_alpha);
 
             /*
@@ -143,10 +141,6 @@ impl Display {
             //std::thread::sleep(std::time::Duration::from_secs(1));
 
         }
-    }
-
-    pub fn default_screen_pulse_effect(&mut self) {
-        self.screen_pulse_effect(5, (1.0, 0.0, 0.0), 0.5);
     }
 
 }

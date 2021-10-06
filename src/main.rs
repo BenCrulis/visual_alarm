@@ -6,7 +6,6 @@ use std::error::Error;
 
 use clap::{App, Arg};
 use chrono;
-use fork;
 
 use sysinfo::{SystemExt, ProcessExt};
 use std::io::{Write};
